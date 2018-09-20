@@ -23,7 +23,7 @@ func init() {
 
 func initDB() {
 	//获取数据库配置,没有配置直接panic
-	db_conf, err := helper.ReadJsonFile("../config/database.json")
+	db_conf, err := helper.ReadJsonFile("./config/database.json")
 
 	if err != nil {
 		panic("json file not found")

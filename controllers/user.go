@@ -2,12 +2,23 @@ package controllers
 
 import (
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 
+	"crypto/md5"
+
+	"../helper"
 	"../models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
+
+type UsernameLogin struct {
+	Name     string `json:"name" binding:"required,min=4,max=20"`
+	Password string `binding:"required,min=4,max=20"`
+}
 
 func GetAllUser(context *gin.Context) {
 	users := models.GetAllUser()
@@ -34,17 +45,50 @@ func GetUserById(context *gin.Context) {
 }
 
 func UserLogin(context *gin.Context) {
+	//获取密钥配置
+	auth_conf, err := helper.ReadJsonFile(helper.Object_path() + "/config/auth.json")
+
+	if err != nil {
+		log.Println("密钥配置文件错误!", err)
+	}
+
 	var user models.User
 
-	if err := models.DB.Where("name=?", context.Param("name")).Error; err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{
-			"message": "请求失败!,用户名密码错误",
-		})
+	var login UsernameLogin
+	if err := context.ShouldBindWith(&login, binding.JSON); err != nil {
+		SendErrorResponse("输入格式不符合要求", context)
+		return
+	}
+
+	if err := models.DB.Where("name=?", login.Name).First(&user).Error; err != nil {
+		SendErrorResponse("请求失败!,用户名不存在", context)
+		return
+	}
+
+	//生成一个md5对象
+	md5_obj := md5.New()
+	io.WriteString(md5_obj, login.Password)        //将str写入到w中
+	md5str2 := fmt.Sprintf("%x", md5_obj.Sum(nil)) //w.Sum(nil)将w的hash转成[]byte格式
+
+	fmt.Println(md5str2)
+
+	if md5str2 != user.Password {
+
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id": user.ID,
 	})
 
-	fmt.Println(token)
+	tokenString, err := token.SignedString([]byte(auth_conf["SecretKey"]))
+
+	if err != nil {
+		SendErrorResponse("内部错误", context)
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{
+		"message":      "登陆成功!",
+		"access_token": tokenString,
+	})
 }

@@ -2,18 +2,20 @@ package helper
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"time"
 )
 
-var (
-	json_result = map[string]string{}
-)
-
 func ReadJsonFile(jsonPath string) (map[string]string, error) {
-	dw, err := ioutil.ReadFile("./config/database.json")
+	var json_result = map[string]string{}
+
+	dw, err := ioutil.ReadFile(jsonPath)
 
 	if err != nil {
 		log.Println(err)
@@ -43,4 +45,18 @@ func ToDateTimeString(inter ...interface{}) {
 			f.SetString(timeP.Format("2006-01-02 15:04:05"))
 		}
 	}
+}
+
+//返回当前项目的绝对路径
+
+func Object_path() string {
+	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	path = strings.Replace(path, "\\", "/", -1)
+
+	return path
 }

@@ -5,9 +5,9 @@ import "log"
 // table users
 type User struct {
 	BaseModel
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	// Password string
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	Password    string
 	IsAdmin     string `json:"is_admin"`
 	Mark        string `json:"mark"`
 	Avatar      string `json:"avatar"`
