@@ -17,7 +17,7 @@ import (
 
 type UsernameLogin struct {
 	Name     string `json:"name" binding:"required,min=4,max=20"`
-	Password string `binding:"required,min=4,max=20"`
+	Password string `json:"password" binding:"required,min=4,max=20"`
 }
 
 func GetAllUser(context *gin.Context) {
@@ -57,6 +57,7 @@ func UserLogin(context *gin.Context) {
 	var login UsernameLogin
 	if err := context.ShouldBindWith(&login, binding.JSON); err != nil {
 		SendErrorResponse("输入格式不符合要求", context)
+		fmt.Println(err)
 		return
 	}
 
@@ -73,7 +74,8 @@ func UserLogin(context *gin.Context) {
 	fmt.Println(md5str2)
 
 	if md5str2 != user.Password {
-
+		SendErrorResponse("登陆失败!密码错误", context)
+		return
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{

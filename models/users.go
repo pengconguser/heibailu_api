@@ -7,7 +7,7 @@ type User struct {
 	BaseModel
 	Name        string `json:"name"`
 	Email       string `json:"email"`
-	Password    string
+	Password    string `gorm:"_"`
 	IsAdmin     string `json:"is_admin"`
 	Mark        string `json:"mark"`
 	Avatar      string `json:"avatar"`
