@@ -57,7 +57,6 @@ func UserLogin(context *gin.Context) {
 	var login UsernameLogin
 	if err := context.ShouldBindWith(&login, binding.JSON); err != nil {
 		SendErrorResponse("输入格式不符合要求", context)
-		fmt.Println(err)
 		return
 	}
 
@@ -70,8 +69,6 @@ func UserLogin(context *gin.Context) {
 	md5_obj := md5.New()
 	io.WriteString(md5_obj, login.Password)        //将str写入到w中
 	md5str2 := fmt.Sprintf("%x", md5_obj.Sum(nil)) //w.Sum(nil)将w的hash转成[]byte格式
-
-	fmt.Println(md5str2)
 
 	if md5str2 != user.Password {
 		SendErrorResponse("登陆失败!密码错误", context)
@@ -92,5 +89,6 @@ func UserLogin(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{
 		"message":      "登陆成功!",
 		"access_token": tokenString,
+		"user":         user,
 	})
 }

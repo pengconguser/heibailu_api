@@ -31,7 +31,6 @@ func initDB() {
 
 	db, err := gorm.Open("mysql", db_conf["db_user"]+":"+db_conf["db_password"]+"@/"+db_conf["db_name"]+"?parseTime=true&loc=Local")
 
-	log.Println(db_conf["db_user"] + ":" + db_conf["db_password"] + "@/" + db_conf["db_name"] + "?parseTime=true")
 	if err != nil {
 		log.Println(err)
 	}
