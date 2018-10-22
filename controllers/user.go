@@ -61,7 +61,7 @@ func UserLogin(context *gin.Context) {
 	}
 
 	if err := models.DB.Where("name=?", login.Name).First(&user).Error; err != nil {
-		SendErrorResponse("请求失败!,用户名不存在", context)
+		SendErrorResponse("请求失败!,用户名不存 在", context)
 		return
 	}
 

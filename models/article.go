@@ -1,5 +1,7 @@
 package models
 
+import "log"
+
 type Article struct {
 	BaseModel
 
@@ -24,6 +26,18 @@ func (self *Article) _GetId(id string) error {
 	return nil
 }
 
+func (self *Article) _List() ([]Article, error) {
+	var articles []Article
+
+	err := DB.First(&articles).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return articles, nil
+}
+
 func GetIdArticle(id string) (Article, error) {
 	var article Article
 
@@ -34,4 +48,16 @@ func GetIdArticle(id string) (Article, error) {
 	}
 
 	return article, nil
+}
+
+func GetArticle() []Article {
+	var article Article
+
+	articles, err := article._List()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return articles
 }
